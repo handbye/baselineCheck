@@ -1,0 +1,2024 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+<osName><![CDATA[Linux]]></osName>
+<version><![CDATA[\S
+Kernel \r on an \m
+
+CentOS Linux release 7.5.1804 (Core) 
+Linux localhost.localdomain 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux]]></version>
+<ip><![CDATA[192.168.194.139]]></ip>
+<type><![CDATA[/server/Linux]]></type>
+<startTime><![CDATA[2019-12-19 12:44:38]]></startTime>
+<pId><![CDATA[2]]></pId>
+	<scripts>
+		<script>
+			<id>1</id>
+			<value><![CDATA[if ([ -f /etc/redhat-release ] && [ -f /etc/pam.d/system-auth ]);
+then FILE=/etc/pam.d/system-auth
+cat $FILE |sed '/^#/d'|sed '/^$/d'|egrep -i "auth[[:space:]]*required[[:space:]]*pam_tally.so|auth[[:space:]]*required[[:space:]]*pam_tally2.so|account[[:space:]]*required[[:space:]]*pam_tally.so|account[[:space:]]*required[[:space:]]*pam_tally2.so"
+fi
+suse_version=`cat /etc/SuSE-release 2&gt;/dev/null|grep -i "VERSION"|awk '{print $3}'`
+if ([ "x$suse_version" = x10 ] || [ "x$suse_version" = x11 ])
+then
+FILE=/etc/pam.d/common-password
+cat $FILE|grep -v '^#'|egrep -i "auth[[:space:]]*required[[:space:]]*pam_tally.so|auth[[:space:]]*required[[:space:]]*pam_tally2.so|account[[:space:]]*required[[:space:]]*pam_tally.so|account[[:space:]]*required[[:space:]]*pam_tally2.so"
+else
+if [ -f /etc/SuSE-release ]
+then
+FILE=/etc/pam.d/passwd
+cat $FILE|grep -v '^#'|egrep -i "auth[[:space:]]*required[[:space:]]*pam_tally.so|auth[[:space:]]*required[[:space:]]*pam_tally2.so|account[[:space:]]*required[[:space:]]*pam_tally.so|account[[:space:]]*required[[:space:]]*pam_tally2.so"
+fi
+fi
+unset suse_version FILE;]]></value>
+		</script>
+		<script>
+			<id>2</id>
+			<value><![CDATA[for  PART  in `grep -v ^# /etc/fstab | awk '($6 != "0") {print $2 }'`
+do
+find $PART -type f \( -perm -04000 -o -perm -02000 \)  -xdev -exec ls -lg {} \; 2&gt;/dev/null
+done]]></value>
+		</script>
+		<script>
+			<id>3</id>
+			<value><![CDATA[cat /etc/profile |grep -v "^[[:space:]]*#"|grep -v "^$"|grep "TMOUT"]]></value>
+		</script>
+		<script>
+			<id>4</id>
+			<value><![CDATA[if grep -v "^[[:space:]]*#" /etc/ssh/sshd_config|grep -i "PermitRootLogin no"
+then echo "This device does not permit root to ssh login,check result:true";
+else
+echo "This device permits root to ssh login,check result:false";
+fi
+if grep  -v "^[[:space:]]*#" /etc/ssh/sshd_config|egrep "^protocol[[:space:]]*2|^Protocol[[:space:]]*2"
+then echo "SSH protocol version is 2,check result:true"
+else
+echo "SSH protocol version is not 2,check result:false"
+fi
+This device permits root to ssh login,check result:false
+SSH protocol version is not 2,check result:false]]></value>
+		</script>
+		<script>
+			<id>5</id>
+			<value><![CDATA[chkconfig --list |egrep "telnet|ssh"
+ps -ef|grep "sshd"|grep -v "grep"
+echo "telnet_status="`chkconfig --list |egrep "*.telnet"|egrep -i "on|启用"|wc -l`
+echo "ssh_status="`ps -ef|grep "sshd"|grep -v "grep"|wc -l`
+unset telnet_status ssh_status
+root       1000      1  0 12月18 ?      00:00:00 /usr/sbin/sshd -D
+root      28016   1000  0 12:38 ?        00:00:00 sshd: root@pts/0
+root      28130   1000  4 12:44 ?        00:00:00 sshd: test [priv]
+test      28134  28130  0 12:44 ?        00:00:00 sshd: test@notty
+root      28146   1000  4 12:44 ?        00:00:00 sshd: test [priv]
+test      28150  28146  0 12:44 ?        00:00:00 sshd: test@pts/1
+telnet_status=0
+ssh_status=6]]></value>
+		</script>
+		<script>
+			<id>6</id>
+			<value><![CDATA[find / -maxdepth 3 -name .netrc 2&gt;/dev/null
+find / -maxdepth 3 -name .rhosts 2&gt;/dev/null
+find / -maxdepth 3 -name hosts.equiv 2&gt;/dev/null
+echo "totalNum_netrc="`find / -maxdepth 3 -name .netrc 2&gt;/dev/null|wc -l`
+echo "totalNum_rhosts="`find / -maxdepth 3 -name .rhosts 2&gt;/dev/null|wc -l`
+echo "totalNum_hosts.equiv="`find / -maxdepth 3 -name hosts.equiv 2&gt;/dev/null|wc -l`
+totalNum_netrc=0
+totalNum_rhosts=0
+totalNum_hosts.equiv=0]]></value>
+		</script>
+		<script>
+			<id>7</id>
+			<value><![CDATA[awk '{print $1":"$2}' /etc/profile|grep -v "^[[:space:]]*#"|grep -i umask|tail -n1
+umask:022]]></value>
+		</script>
+		<script>
+			<id>8</id>
+			<value><![CDATA[ls -alL /etc/passwd /etc/shadow /etc/group
+echo "passwd_total="`ls -alL /etc/passwd 2&gt;/dev/null|grep -v  "[r-][w-]-[r-]--[r-]--"|grep "[r-][w-][x-][r-][w-][x-][r-][w-][x-]"|wc -l`
+echo "shadow_total="`ls -alL /etc/shadow 2&gt;/dev/null|grep -v  "[r-]--------"|grep "[r-][w-][x-][r-][w-][x-][r-][w-][x-]"|wc -l`
+echo "group_total="`ls -alL /etc/group 2&gt;/dev/null|grep -v  "[r-][w-]-[r-]--[r-]--"|grep "[r-][w-][x-][r-][w-][x-][r-][w-][x-]"|wc -l`
+-rw-r--r--. 1 root root 489 12月 15 23:28 /etc/group
+-rw-r--r--. 1 root root 885 12月 15 23:28 /etc/passwd
+----------. 1 root root 708 12月 15 23:30 /etc/shadow
+passwd_total=0
+shadow_total=0
+group_total=0]]></value>
+		</script>
+		<script>
+			<id>9</id>
+			<value><![CDATA[cat /etc/login.defs |grep -v "^[[:space:]]*#"|grep -E '^\s*PASS_MAX_DAYS|^\s*PASS_MIN_DAYS|^\s*PASS_WARN_AGE'
+PASS_MAX_DAYS	99999
+PASS_MIN_DAYS	0
+PASS_WARN_AGE	7]]></value>
+		</script>
+		<script>
+			<id>10</id>
+			<value><![CDATA[awk -F: '($3 == 0) { print $1 }' /etc/passwd
+echo "result="`awk -F: '($3 == 0) { print $1 }' /etc/passwd | grep -v "^[[:space:]]*#" |grep -v root|wc -l`
+root
+result=0]]></value>
+		</script>
+		<script>
+			<id>11</id>
+			<value><![CDATA[Calculate ()
+{
+DCREDIT=`cat $FILE|egrep -v "^#|^$"|grep -w "dcredit"|sed 's/^.*dcredit=//g'|sed 's/\s.*$//g'`;
+LCREDIT=`cat $FILE|egrep -v "^#|^$"|grep -w "lcredit"|sed 's/^.*lcredit=//g'|sed 's/\s.*$//g'`;
+UCREDIT=`cat $FILE|egrep -v "^#|^$"|grep -w "ucredit"|sed 's/^.*ucredit=//g'|sed 's/\s.*$//g'`;
+OCREDIT=`cat $FILE|egrep -v "^#|^$"|grep -w "ocredit"|sed 's/^.*ocredit=//g'|sed 's/\s.*$//g'`;
+MINLEN=`cat $FILE|egrep -v "^#|^$"|grep "minlen"|sed 's/^.*minlen=//g'|sed 's/\s.*$//g'`;
+echo "DCREDIT=$DCREDIT";
+echo "LCREDIT=$LCREDIT";
+echo "UCREDIT=$UCREDIT";
+echo "OCREDIT=$OCREDIT";
+echo "MINCLASS=$MINLEN";
+unset DCREDIT LCREDIT UCREDIT OCREDIT MINLEN;
+}
+if ([ -f /etc/redhat-release ] && [ -f /etc/pam.d/system-auth ]);
+then
+FILE=/etc/pam.d/system-auth;
+Calculate;
+fi
+suse_version=`cat /etc/SuSE-release 2&gt;/dev/null|grep -i "VERSION"|awk '{print $3}'`
+if ([ "x$suse_version" = x10 ] || [ "x$suse_version" = x11 ])
+then
+FILE=/etc/pam.d/common-password
+Calculate;
+else
+if [ -f /etc/SuSE-release ]
+then
+FILE=/etc/pam.d/passwd
+Calculate;
+fi
+fi
+unset FILE suse_version;
+DCREDIT=
+LCREDIT=
+UCREDIT=
+OCREDIT=
+MINCLASS=]]></value>
+		</script>
+		<script>
+			<id>12</id>
+			<value><![CDATA[echo $PATH
+echo "result=`echo $PATH|egrep "^\.\:|^\.\.\:|\:\.$|\:\.\.$|\:\.\:|\:\.\.\:"|wc -l`"
+/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/test/.local/bin:/home/test/bin
+result=0]]></value>
+		</script>
+		<script>
+			<id>13</id>
+			<value><![CDATA[for PART in `grep -v ^# /etc/fstab | awk '($6 != "0") {print $2 }'`
+do
+find $PART -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -xdev -exec ls -ld {} \; 2&gt;/dev/null;
+done]]></value>
+		</script>
+		<script>
+			<id>14</id>
+			<value><![CDATA[for PART in `grep -v ^# /etc/fstab | awk '($6 != "0") {print $2 }'`
+do
+find $PART -xdev -type f \( -perm -0002 -a ! -perm -1000 \) -xdev -exec ls -ld {} \; 2&gt;/dev/null;
+done]]></value>
+		</script>
+		<script>
+			<id>15</id>
+			<value><![CDATA[for PART in `grep -v ^# /etc/fstab | awk '($6 != "0") {print $2 }'`
+do
+find $PART -nouser -o -nogroup -print 2&gt;/dev/null
+done]]></value>
+		</script>
+		<script>
+			<id>16</id>
+			<value><![CDATA[chkconfig --list |egrep "telnet"
+telnet_status=`chkconfig --list|egrep "telnet.*"|egrep "on|启用"|wc -l`
+if [ $telnet_status -ge 1 ]
+then
+echo "pts_count="`cat /etc/securetty|grep -v "^[[:space:]]*#"|grep "pts/*"|wc -l`
+else
+echo "Telnet process is not open"
+fi
+unset telnet_status
+Telnet process is not open]]></value>
+		</script>
+		<script>
+			<id>17</id>
+			<value><![CDATA[cat /etc/profile|grep -v "^[[:space:]]*#"|grep "ulimit[[:space:]]*-S[[:space:]]*-c[[:space:]]*0[[:space:]]*&gt;[[:space:]]*/dev/null[[:space:]]*2&gt;&1"
+cat /etc/security/limits.conf|grep -v "[[:space:]]*#"
+
+]]></value>
+		</script>
+		<script>
+			<id>18</id>
+			<value><![CDATA[if [ -f /etc/syslog.conf ];
+then
+cat /etc/syslog.conf | grep -v "^[[:space:]]*#" | grep -E '[[:space:]]*.+@.+';
+fi;
+if [ -s /etc/syslog-ng/syslog-ng.conf ];
+then
+ret_1=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "port(514)"|awk '{print $2}'`;
+if [ -n "$ret_1" ];
+then
+ret_2=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "destination($ret_1)"`;
+if [ -n "$ret_2" ];
+then
+echo "Set the log server:true";
+else
+echo "not Set the log server:false";
+fi;
+fi;
+fi;
+if [ -f /etc/rsyslog.conf ];
+then cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#" | grep -E '[[:space:]]*.+@.+';
+fi]]></value>
+		</script>
+		<script>
+			<id>19</id>
+			<value><![CDATA[ssh_status=`ps -ef|grep "sshd"|grep -v "grep"|wc -l`;
+if ([ $ssh_status != 0 ] && [ -s /etc/motd ]);
+then
+echo "sshd is running,banner is not null,check result:true";
+else
+if [ $ssh_status -ge 1 ];
+then
+echo "sshd is running,banner is null,check result:false";
+else
+if [ -s /etc/motd ];
+then
+echo "sshd is not running,banner is not null,check result:true";
+else
+echo "sshd is not running,banner is null,check result:true";
+fi;
+fi;
+fi;
+unset ssh_status;
+sshd is running,banner is null,check result:false]]></value>
+		</script>
+		<script>
+			<id>20</id>
+			<value><![CDATA[cat /etc/shadow|sed '/^\s*#/d'|awk -F: '($2!~/^*/) && ($2!~/^!!/) {print $1":"}'|egrep "^lp:|^sync:|^halt:|^news:|^uucp:|^operator:|^games:|^gopher:|^smmsp:|^nfsnobody:|^nobody:"
+egrep "^lp:|^sync:|^halt:|^news:|^uucp:|^operator:|^games:|^gopher:|^smmsp:|^nfsnobody:|^nobody:" /etc/passwd|awk -F: '($7!~/bin\/false/) {print $1":"$7}'
+echo "result_pw="`cat /etc/shadow|sed '/^\s*#/d'|awk -F: '($2!~/^*/) && ($2!~/^!!/) {print $1}'|egrep "^lp:|^sync:|^halt:|^news:|^uucp:|^operator:|^games:|^gopher:|^smmsp:|^nfsnobody:|^nobody:"|wc -l`
+echo "result_shell="`egrep "^lp:|^sync:|^halt:|^news:|^uucp:|^operator:|^games:|^gopher:|^smmsp:|^nfsnobody:|^nobody:" /etc/passwd|awk -F: '($7!~/bin\/false/) {print $1":"$7}'|wc -l`
+lp:/sbin/nologin
+sync:/bin/sync
+halt:/sbin/halt
+operator:/sbin/nologin
+games:/sbin/nologin
+nobody:/sbin/nologin
+result_pw=0
+result_shell=6]]></value>
+		</script>
+		<script>
+			<id>21</id>
+			<value><![CDATA[ls -lL /etc/passwd 2&gt;/dev/null
+echo "passwd="`ls -lL /etc/passwd 2&gt;/dev/null|grep -v "[r-][w-]-[r-]--[r-]--"|wc -l`
+ls -lL /etc/group 2&gt;/dev/null
+echo "group="`ls -lL /etc/group 2&gt;/dev/null|grep -v "[r-][w-]-[r-]--[r-]--"|wc -l`
+ls -lL /etc/services 2&gt;/dev/null
+echo "services="`ls -lL /etc/services 2&gt;/dev/null|grep -v "[r-][w-]-[r-]--[r-]--"|wc -l`
+ls -lL /etc/shadow 2&gt;/dev/null
+echo "shadow="`ls -lL /etc/shadow 2&gt;/dev/null|grep -v "[r-]--------"|wc -l`
+ls -lL /etc/xinetd.conf 2&gt;/dev/null
+echo "xinetd="`ls -lL /etc/xinetd.conf 2&gt;/dev/null|grep -v "[r-][w-]-------"|wc -l`
+ls -lLd /etc/security 2&gt;/dev/null
+echo "security="`ls -lLd /etc/security 2&gt;/dev/null|grep -v "[r-][w-]-------"|wc -l`
+-rw-r--r--. 1 root root 885 12月 15 23:28 /etc/passwd
+passwd=0
+-rw-r--r--. 1 root root 489 12月 15 23:28 /etc/group
+group=0
+-rw-r--r--. 1 root root 670293 6月   7 2013 /etc/services
+services=0
+----------. 1 root root 708 12月 15 23:30 /etc/shadow
+shadow=0
+xinetd=0
+drwxr-xr-x. 6 root root 4096 11月  9 2018 /etc/security
+security=1]]></value>
+		</script>
+		<script>
+			<id>22</id>
+			<value><![CDATA[if [ -f /etc/syslog.conf ];
+then
+syslog=`cat /etc/syslog.conf | grep -v "^[[:space:]]*#" | grep "*.err\;kern\.debug\;daemon\.notice[[:space:]]*/var/adm/messages"|wc -l`;
+if [ $syslog -ge 1 ];
+then
+echo "syslog check result:true";
+else
+echo "syslog check result:false";
+fi;
+fi;
+if [ -f /etc/rsyslog.conf ];
+then
+rsyslog=`cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#" | grep "*.err\;kern\.debug\;daemon\.notice[[:space:]]*/var/adm/messages"|wc -l`;
+if [ $rsyslog -ge 1 ];
+then
+echo "rsyslog check result:true";
+else
+echo "rsyslog check result:false";
+fi;
+fi;
+if [ -s /etc/syslog-ng/syslog-ng.conf ];
+then suse_ret=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "level(err) or facility(kern) and level(debug) or facility(daemon) and level(notice)"`;
+if [ -n "$suse_ret" ];
+then suse_ret2=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep 'file("/var/adm/msgs")'`;
+if [ -n "$suse_ret2" ];
+then suse_ret3=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "destination(msgs)"`;
+fi;
+fi;
+fi;
+if [ -n "$suse_ret3" ];
+then echo "suse:valid";
+else echo "suse:no value";
+fi;
+unset suse_ret suse_ret2 suse_ret3 rsyslog syslog;
+rsyslog check result:false
+suse:no value]]></value>
+		</script>
+		<script>
+			<id>23</id>
+			<value><![CDATA[UP_GIDMIN=`(grep -v ^# /etc/login.defs |grep "^GID_MIN"|awk '($1="GID_MIN") {print $2}')`
+UP_GIDMAX=`(grep -v ^# /etc/login.defs |grep "^GID_MAX"|awk '($1="GID_MAX") {print $2}')`
+egrep -v "oracle|sybase|postgres" /etc/passwd|awk -F: '($4&gt;='$UP_GIDMIN' && $4<='$UP_GIDMAX') {print $1":"$3":"$4}'
+echo $UP_GIDMIN $UP_GIDMAX
+echo "result="`egrep -v "oracle|sybase|postgres" /etc/passwd|awk -F: '($4&gt;='$UP_GIDMIN' && $4<='$UP_GIDMAX') {print $1":"$3":"$4}'|wc -l`
+unset UP_GIDMIN UP_GIDMAX
+test:1000:1000
+1000 60000
+result=1]]></value>
+		</script>
+		<script>
+			<id>24</id>
+			<value><![CDATA[ssh_banner=`cat /etc/ssh/sshd_config | grep -v '^[[:space:]]*#' | grep -i Banner|awk '{print $2}'`;
+ssh_status=`netstat -antp|grep -i listen|grep ":22\&gt;"|wc -l`;
+if ([ "$ssh_status" != 0 ] && [ -s "$ssh_banner" ]);
+then
+echo "sshd is running.sshd banner is not null.sshd banner check result:true";
+else
+if [ "$ssh_status" != 0 ];
+then
+echo "sshd is running.sshd banner is null.sshd banner check result:false";
+else
+echo "sshd is not running.sshd banner check result:true";
+fi;
+fi;
+unset ssh_banner ssh_status;
+sshd is running.sshd banner is null.sshd banner check result:false]]></value>
+		</script>
+		<script>
+			<id>25</id>
+			<value><![CDATA[echo "ip_forward="`sysctl -n net.ipv4.ip_forward`
+ip_forward=1]]></value>
+		</script>
+		<script>
+			<id>26</id>
+			<value><![CDATA[ps -ef |egrep "nfs|rpc.mountd|rpc.nfsd|rpc.lockd|rpc.statd"|egrep -v "egrep|grep"|grep -v kblockd
+NFSSTATUS=`ps -ef |egrep "nfs|rpc.mountd|rpc.nfsd|rpc.lockd|rpc.statd"|egrep -v "egrep|grep"|grep -v kblockd|wc -l`
+NFSAllowNo=`egrep -i "nfs" /etc/hosts.allow |sed '/^#/d'|sed '/^$/d'|wc -l`
+NFSDenyNo=`egrep -i "nfs:all|all:all" /etc/hosts.deny |sed '/^#/d'|sed '/^$/d'|wc -l`
+if [ $NFSSTATUS = 0 ];
+then
+echo "NFS daemon not running";
+else
+if ([ $NFSAllowNo != 0 ] && [ $NFSDenyNo != 0 ])
+then
+echo "NFS daemon running.check resule:true";
+else
+echo "NFS daemon running.check result:false";
+fi;
+fi;
+unset NFSSTATUS NFSAllowNo;
+NFS daemon not running]]></value>
+		</script>
+		<script>
+			<id>27</id>
+			<value><![CDATA[cat /etc/inittab|grep -v "^#"|grep "ctrlaltdel"]]></value>
+		</script>
+		<script>
+			<id>28</id>
+			<value><![CDATA[cat /etc/hosts.allow |sed '/^#/d'|sed '/^$/d'|egrep -i "sshd|telnet|all"
+cat /etc/hosts.deny |sed '/^#/d'|sed '/^$/d'|egrep -i "all:all"
+echo "allowno="`egrep -i "sshd|telnet|all" /etc/hosts.allow |sed '/^#/d'|sed '/^$/d'|wc -l`
+echo "denyno="`egrep -i "sshd|telnet|all" /etc/hosts.deny |sed '/^#/d'|sed '/^$/d'|wc -l`
+allowno=0
+denyno=0]]></value>
+		</script>
+		<script>
+			<id>29</id>
+			<value><![CDATA[awk -F: '( $2 == "" ) { print $1 }' /etc/shadow
+echo "result="`awk -F: '( $2 == "" ) { print $1 }' /etc/shadow |wc -l`
+result=0]]></value>
+		</script>
+		<script>
+			<id>30</id>
+			<value><![CDATA[ntpstatus=`ps -ef|egrep "ntp|ntpd"|grep -v grep|wc -l`
+if [ $ntpstatus != 0 ];
+then
+echo "ntp:start"
+grep "^server" /etc/ntp.conf|grep -v "127.127.1.0"|grep -v "127.0.0.1";
+echo "ntpserverno="`grep "^server" /etc/ntp.conf|grep -v "127.127.1.0"|grep -v "127.0.0.1"|wc -l`;
+else
+echo "ntp:stop"
+crontab -l|grep -v "^#"|grep ntp;
+echo "ntpserverno="`crontab -l|grep -v "^#"|grep ntp|wc -l`;
+fi
+unset ntpstatus ntpserverno;
+ntp:stop
+ntpserverno=0]]></value>
+		</script>
+		<script>
+			<id>31</id>
+			<value><![CDATA[echo "accept_redirects="`sysctl -n net.ipv4.conf.all.accept_redirects`
+accept_redirects=0]]></value>
+		</script>
+		<script>
+			<id>32</id>
+			<value><![CDATA[FTPSTATUS=`ps -ef|grep ftpd|grep -v grep|wc -l`
+Check_ftp ()
+{
+if [ -f /etc/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd.conf";
+else
+if [ -f /etc/vsftpd/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd/vsftpd.conf";
+fi;
+fi;
+if [ -f "$FTPCONF" ]
+then
+if [ `grep -v "^[[:space:]]*#" $FTPCONF|grep -i "ftpd_banner"|wc -l` -ne 0 ];
+then
+echo "vsftpd is running.Banner in $FTPCONF is recommended.FTP check result:true";
+else
+echo "vsftpd is running.Banner in $FTPCONF is not recommended.FTP check result:false";
+fi;
+fi;
+if [ -f /etc/pure-ftpd/pure-ftpd.conf ];
+then
+if [ `cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "FortunesFile"|wc -l` -eq 0 ]
+then
+echo "pure-ftpd is running.banner in pure-ftpd.conf is not recommended.FTP check result:false.";
+else
+if [ -s "`cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "FortunesFile"|awk '{print $2}'`" ];
+then
+echo "pure-ftpd is running.Banner in pure-ftpd.conf is recommended.FTP check result:true.";
+else
+echo "pure-ftpd is running.Banner in pure-ftpd.conf is not recommended.FTP check result:false.";
+fi;
+fi;
+else
+if [ -f /etc/pure-ftpd.conf ]
+then
+if [ `cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "FortunesFile"|wc -l` -eq 0 ]
+then
+echo "pure-ftpd is running.banner in pure-ftpd.conf is not recommended.FTP check result:false.";
+else
+if [ -s "`cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "FortunesFile"|awk '{print $2}'`" ];
+then
+echo "pure-ftpd is running.Banner in pure-ftpd.conf is recommended.FTP check result:true.";
+else
+echo "pure-ftpd is running.Banner in pure-ftpd.conf is not recommended.FTP check result:false.";
+fi;
+fi
+fi;
+fi;
+if [ -f /etc/ftpaccess ];
+then
+if [ `cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*banner"|wc -l` -eq 0 ]
+then
+echo "wu-ftpd is running.banner in wu-ftpd.conf is not recommended.FTP check result:false.";
+else
+if [ -s "`cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*banner"|awk '{print $2}'`" ];
+then
+echo "wu-ftpd is running.Banner in wu-ftpd.conf is recommended.FTP check result:true.";
+else
+echo "wu-ftpd is running.Banner in wu-ftpd.conf is not recommended.FTP check result:false.";
+fi;
+fi;
+else
+if [ -f /etc/ftpd/ftpaccess ]
+then
+if [ `cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*banner"|wc -l` -eq 0 ]
+then
+echo "wu-ftpd is running.banner in wu-ftpd.conf is not recommended.FTP check result:false.";
+else
+if [ -s "`cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*banner"|awk '{print $2}'`" ];
+then
+echo "wu-ftpd is running.Banner in wu-ftpd.conf is recommended.FTP check result:true.";
+else
+echo "wu-ftpd is running.Banner in wu-ftpd.conf is not recommended.FTP check result:false.";
+fi;
+fi;
+fi;
+fi;
+if [ -f /etc/proftpd.conf ];
+then
+if [ -s "`cat /etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed '/<Anonymous.*&gt;/,/<\/Anonymous&gt;/d'|grep -i "DisplayConnect"|awk '{print $2}'`" ]
+then
+echo "proftpd is running.banner in proftpd.conf is recommended.FTP check result:true.";
+else
+echo "proftpd is running.banner in proftpd.conf is not recommended.FTP check result:false.";
+fi;
+else
+if [ -f /etc/proftpd/proftpd.conf ];
+then
+if [ -s "`cat /etc/proftpd/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed '/<Anonymous.*&gt;/,/<\/Anonymous&gt;/d'|grep -i "DisplayConnect"|awk '{print $2}'`" ]
+then
+echo "proftpd is running.banner in proftpd.conf is recommended.FTP check result:true.";
+else
+echo "proftpd is running.banner in proftpd.conf is not recommended.FTP check result:false.";
+fi;
+else
+if  [ -f /usr/local/proftpd/etc/proftpd.conf ]
+then
+if [ -s "`cat /usr/local/proftpd/etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed '/<Anonymous.*&gt;/,/<\/Anonymous&gt;/d'|grep -i "DisplayConnect"|awk '{print $2}'`" ]
+then
+echo "proftpd is running.banner in proftpd.conf is recommended.FTP check result:true.";
+else
+echo "proftpd is running.banner in proftpd.conf is not recommended.FTP check result:false.";
+fi;
+fi;
+fi;
+fi;
+unset FTPCONF;
+}
+if [ $FTPSTATUS -eq 0 ];
+then
+echo "FTP is not running.FTP check result:true"
+else
+Check_ftp;
+fi;
+unset FTPSTATUS;
+FTP is not running.FTP check result:true]]></value>
+		</script>
+		<script>
+			<id>33</id>
+			<value><![CDATA[SNMPD_STATUS=`ps -ef|grep snmpd|egrep -v "grep"|wc -l`;
+Check_SNMPD ()
+{
+if [ -f /etc/snmp/snmpd.conf ];
+then SNMPD_CONF=/etc/snmp/snmpd.conf;
+else SNMPD_CONF=/etc/snmpd.conf;
+fi;
+grep -v "^#" $SNMPD_CONF|egrep "community";
+if [ `grep -v "^#" $SNMPD_CONF|egrep "rocommunity|rwcommunity"|egrep "public|private"|wc -l` -eq 0 ];
+then echo "SNMPD is running.SNMP check result:true";
+else echo "SNMPD is running.SNMP check result:false";
+fi;
+}
+if [ "$SNMPD_STATUS" -ge  1 ];
+then Check_SNMPD;
+else echo "SNMPD is not running.SNMP check result:true";
+fi
+unset SNMPD_STATUS SNMPD_CONF;
+SNMPD is not running.SNMP check result:true]]></value>
+		</script>
+		<script>
+			<id>34</id>
+			<value><![CDATA[up_uidmin=`(grep -v ^# /etc/login.defs |grep "^UID_MIN"|awk '($1="UID_MIN"){print $2}')`
+up_uidmax=`(grep -v ^# /etc/login.defs |grep "^UID_MAX"|awk '($1="UID_MAX"){print $2}')`
+egrep -v "oracle|sybase|postgres" /etc/passwd|awk -F: '($3&gt;='$up_uidmin' && $3<='$up_uidmax') {print $1":"$3}'
+echo "result="`egrep -v "oracle|sybase|postgres" /etc/passwd|awk -F: '($3&gt;='$up_uidmin' && $3<='$up_uidmax') {print $1":"$3}'|wc -l`
+unset up_uidmin up_uidmax
+test:1000
+result=1]]></value>
+		</script>
+		<script>
+			<id>35</id>
+			<value><![CDATA[echo "idle_activation_enabled="`gconftool-2 -g /apps/gnome-screensaver/idle_activation_enabled`
+echo "lock_enabled="`gconftool-2 -g /apps/gnome-screensaver/lock_enabled`
+echo "mode="`gconftool-2 -g /apps/gnome-screensaver/mode`
+echo "idle_delay="`gconftool-2 -g /apps/gnome-screensaver/idle_delay`
+idle_activation_enabled=
+lock_enabled=
+mode=
+idle_delay=]]></value>
+		</script>
+		<script>
+			<id>36</id>
+			<value><![CDATA[FTPSTATUS=`ps -ef|grep ftpd|grep -v grep|wc -l`;
+Check_ftp ()
+{
+if [ -f /etc/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd.conf";
+else
+if [ -f /etc/vsftpd/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd/vsftpd.conf";
+fi;
+fi;
+if [ -f "$FTPCONF" ]
+then
+cat $FTPCONF|grep -v "^[[:space:]]*#"|grep "ls_recurse_enable";
+cat $FTPCONF|grep -v "^[[:space:]]*#"|grep "local_umask";
+cat $FTPCONF|grep -v "^[[:space:]]*#"|grep "anon_umask";
+fi;
+if [ -f /etc/pure-ftpd/pure-ftpd.conf ];
+then
+echo "pureftp_umask="`cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*Umask"`;
+else
+if [ -f /etc/pure-ftpd.conf ]
+then
+echo "pureftp_umask="`cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*Umask"`;
+fi;
+fi;
+if [ -f /etc/proftpd.conf ];
+then
+echo "proftp_umask="`cat /etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*Umask"`;
+else
+if [ -f /etc/proftpd/proftpd.conf ];
+then
+echo "proftp_umask="`cat /etc/proftpd/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*Umask"`;
+else
+if [ -f /usr/local/proftpd/etc/proftpd.conf ];
+then
+echo "proftp_umask="`cat /usr/local/proftpd/etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*Umask"`;
+fi;
+fi;
+fi;
+if [ -f /etc/ftpaccess ];
+then
+cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*upload";
+else
+if [ -f /etc/ftpd/ftpaccess ]
+then
+cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "^[[:space:]]*upload";
+fi;
+fi;
+unset FTPCONF;
+}
+if [ $FTPSTATUS -eq 0 ];
+then  echo "FTP is not running.FTP check result:true.";
+else
+Check_ftp;
+fi
+unset FTPSTATUS;
+FTP is not running.FTP check result:true.]]></value>
+		</script>
+		<script>
+			<id>37</id>
+			<value><![CDATA[ls /etc/rc2.d/* /etc/rc3.d/* /etc/rc4.d/* /etc/rc5.d/* 2&gt;/dev/null|egrep "lp|rpc|snmpdx|keyserv|nscd|Volmgt|uucp|dmi|sendmail|autoinstall"|grep "^S"
+echo "result="` ls /etc/rc2.d/* /etc/rc3.d/* /etc/rc4.d/* /etc/rc5.d/* 2&gt;/dev/null|egrep "lp|rpc|snmpdx|keyserv|nscd|Volmgt|uucp|dmi|sendmail|autoinstall"|grep "^S"|wc -l`
+result=0]]></value>
+		</script>
+		<script>
+			<id>38</id>
+			<value><![CDATA[uname -a
+if [ -f /etc/SuSE-release ];
+then
+cat /etc/SuSE-release;
+uname -a;
+else
+if [ -f /etc/redhat-release ];
+then
+cat /etc/redhat-release;
+uname -a;
+fi;
+fi;
+Linux localhost.localdomain 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+CentOS Linux release 7.5.1804 (Core) 
+Linux localhost.localdomain 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux]]></value>
+		</script>
+		<script>
+			<id>39</id>
+			<value><![CDATA[unset red_ret suse_ret suse_ret2 suse_ret3
+if [ -s /etc/syslog.conf ];
+then
+cat /etc/syslog.conf | grep -v "^[[:space:]]*#" | egrep "authpriv\.\*.*[[:space:]]*\/|authpriv\.info.*[[:space:]]*\/";
+fi;
+if [ -s /etc/rsyslog.conf ];
+then
+cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#" | egrep "authpriv\.\*.*[[:space:]]*\/|authpriv\.info.*[[:space:]]*\/";
+fi;
+if [ -s /etc/syslog-ng/syslog-ng.conf ];
+then
+suse_ret=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "facility(auth)" | grep "filter" | awk '{print \$2}'`;
+if [ -n "$suse_ret" ];
+then
+suse_ret2=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "destination" | grep "/var/log/authlog"`;
+if [ -n "$suse_ret2" ];
+then
+suse_ret3=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "log" | grep "$suse_ret"`;
+fi;
+fi;
+fi;
+if [ -n "$suse_ret3" ];
+then
+echo "suse:valid";
+else
+echo "ret:no value";
+fi;
+unset suse_ret suse_ret2 suse_ret3;
+authpriv.*                                              /var/log/secure
+ret:no value]]></value>
+		</script>
+		<script>
+			<id>40</id>
+			<value><![CDATA[unset syslogd_status syslogng_status rsyslogd_status LOGDIR;
+syslogd_status=`ps -ef |grep ' syslogd '|grep -v "grep"|wc -l`;
+syslogng_status=`ps -ef |grep "syslog-ng"|grep -v "grep syslog-ng"|wc -l`;
+rsyslogd_status=`ps -ef | grep "rsyslogd" | grep -v "grep" |wc -l`;
+if [ "$syslogd_status" != 0 ];
+then
+LOGDIR=`if [ -f /etc/syslog.conf ];then cat /etc/syslog.conf| grep -v "^[[:space:]]*#"|awk '{print $2}'|sed 's/^-//g'|grep '^\s*\/';fi`;
+ls -l $LOGDIR 2&gt;/dev/null|grep -v "[r-][w-]-[r-]-----"|awk '{print $1" "$7" "$8" "$9}';
+else
+if [ "$rsyslogd_status" != 0 ];
+then
+LOGDIR=`cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#"|awk '{print $2}'|sed 's/^-//g'|grep '^\s*\/'`;
+ls -l $LOGDIR 2&gt;/dev/null|grep -v "[r-][w-]-[r-]-----"|awk '{print $1" "$7" "$8" "$9}';
+else
+if [ "$syslogng_status" != 0 ];
+then
+LOGDIR=`cat /etc/syslog-ng/syslog-ng.conf|grep -v "^[[:space:]]*#"|grep "^destination"|grep file|cut -d\" -f2`;
+ls -l $LOGDIR 2&gt;/dev/null|grep -v "[r-][w-]-[r-]-----"|awk '{print $1" "$7" "$8" "$9}';
+else
+echo "syslog is not running";
+fi;
+fi;
+fi;
+unset syslogd_status syslogng_status rsyslogd_status LOGDIR;
+-rw-r--r--. 11 2018 /etc/rsyslog.d/listen.conf
+   
+/var/lib/rsyslog:   
+总用量   ]]></value>
+		</script>
+		<script>
+			<id>41</id>
+			<value><![CDATA[if ([ -f /etc/redhat-release ] && [ -f /etc/pam.d/system-auth ]);
+then FILE=/etc/pam.d/system-auth
+cat $FILE |sed '/^#/d'|sed '/^$/d'|grep password
+fi
+suse_version=`cat /etc/SuSE-release 2&gt;/dev/null|grep -i "VERSION"|awk '{print $3}'`
+if ([ "x$suse_version" = x10 ] || [ "x$suse_version" = x11 ])
+then
+FILE=/etc/pam.d/common-password
+cat $FILE|grep -v '^#'|grep -v '^$'|grep password
+else
+if [ -f /etc/SuSE-release ]
+then
+FILE=/etc/pam.d/passwd
+cat $FILE|grep -v '^#'|grep -v '^$'|grep password
+fi
+fi
+unset suse_version FILE;
+password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
+password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok
+password    required      pam_deny.so]]></value>
+		</script>
+		<script>
+			<id>42</id>
+			<value><![CDATA[FTPSTATUS=`ps -ef|grep ftpd|grep -v "grep ftpd"|wc -l`;
+Check_ftp2 ()
+{
+if [ -f /etc/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd.conf";
+FTPUSER=`cat $FTPCONF|grep -v "^#"|grep userlist_file|cut -d= -f2`;
+Check_vsftpconf;
+else
+if [ -f /etc/vsftpd/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd/vsftpd.conf";
+FTPUSER=`cat $FTPCONF|grep -v "^#"|grep userlist_file|cut -d= -f2`;
+Check_vsftpconf;
+fi;
+fi;
+}
+Check_vsftpconf ()
+{
+userlist_enable=`grep -v "^#" $FTPCONF|grep -i "userlist_enable=YES"|wc -l`;
+userlist_deny=`grep -v "^#" $FTPCONF|grep -i "userlist_deny=NO"|wc -l`;
+if  [ $userlist_enable = 1 -a $userlist_deny = 1 ];
+then
+if [ -n "$FTPUSER" ]
+then
+if [ `grep -v "^#" $FTPUSER|egrep "^root$"|wc -l` = 0 ];
+then
+echo "FTP is running.FTP user config $ftpusers_pam is not recommended.FTP user config "$FTPUSER" is recommended.FTP check result:true";
+else
+echo "FTP is running.FTP user config $ftpusers_pam is not recommended.FTP user config "$FTPUSER" is not recommended.FTP check result:false";
+fi;
+else
+echo "FTP is running.FTP user config $ftpusers_pam is not recommended.FTP user config "$FTPUSER" does not exist.FTP check result:false";
+fi;
+else
+echo "FTP is running.FTP user config $ftpusers_pam is not recommended.userlist_enable and userlist_deny is not recommended.FTP check result:false";
+fi;
+}
+Check_ftp1 ()
+{
+if [ -f  /etc/pam.d/vsftpd ];
+then
+ftpusers_pam=`grep "file" /etc/pam.d/vsftpd|egrep -v "^#"|sed 's/^.*file=//g'|awk '{print $1}'`
+if [ -n "$ftpusers_pam" ]
+then
+if [ `grep -v "^#" $ftpusers_pam|egrep "^root$"|wc -l` -ge 1 ];
+then
+echo "FTP is running.FTP user config $ftpusers_pam is recommended.FTP check result:true";
+else
+Check_ftp2;
+fi
+else
+Check_ftp2;
+fi
+else
+echo "/etc/pam.d/vsftpd is not exist,scripts exit now";
+Check_ftp2;
+fi
+if [ -f /etc/proftpd.conf ];
+then
+if [ `cat /etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "RootLogin[[:space:]]*on|wc -l` -eq 0 ]
+then
+echo "proftpd is running.FTP check result:true";
+else
+echo "proftpd is running.FTP check result:false";
+fi;
+else
+if [ -f /etc/proftpd/proftpd.conf ];
+then
+if [ `cat /etc/proftpd/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "RootLogin[[:space:]]*on|wc -l` -eq 0 ]
+then
+echo "proftpd is running.FTP check result:true";
+else
+echo "proftpd is running.FTP check result:false";
+fi;
+else
+if [ -f /usr/local/proftpd/etc/proftpd.conf ];
+then
+if [ `cat /usr/local/proftpd/etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "RootLogin[[:space:]]*on|wc -l` -eq 0 ]
+then
+echo "proftpd is running.FTP check result:true";
+else
+echo "proftpd is running.FTP check result:false";
+fi;
+fi;
+fi;
+fi;
+if [ -f /etc/ftpusers ];
+then
+echo "wu-ftp_users="`cat /etc/ftpusers|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^root"`;
+else
+if [ -f /etc/ftpd/ftpusers ];
+then
+echo "wu-ftp_users="`cat /etc/ftpd/ftpusers|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^root"`;
+fi;
+fi;
+if [ -f /etc/pure-ftpd/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "MinUID";
+else
+if [ -f /etc/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "MinUID";
+fi;
+fi;
+}
+if [ $FTPSTATUS -eq 0 ];
+then  echo "FTP is not running.FTP check result:true";
+else  Check_ftp1;
+fi
+unset FTPSTATUS FTPCONF FTPUSER ftpusers_pam
+FTP is not running.FTP check result:true]]></value>
+		</script>
+		<script>
+			<id>43</id>
+			<value><![CDATA[unset red_ret suse_ret suse_ret2 suse_ret3
+if [ -s /etc/syslog.conf ];
+then red_ret=`cat /etc/syslog.conf | grep -v "^[[:space:]]*#" | grep "authpriv\.\*[[:space:]]\/*"`;
+fi
+if [ -s /etc/rsyslog.conf ];
+then red_ret2=`cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#" | grep "authpriv\.\*[[:space:]]\/*"`;
+fi
+if [ -s /etc/syslog-ng/syslog-ng.conf ];
+then
+suse_ret=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "facility(authpriv)" | grep "filter" | awk '{print \$2}'`;
+if [ -n "$suse_ret" ];
+then suse_ret2=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "destination" | grep "/var/log/secure"`;
+if [ -n "$suse_ret2" ];
+then suse_ret3=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "log" | grep "$suse_ret"`;
+fi;
+fi;
+fi
+if [ -n "$red_ret" ];
+then
+echo "redhat-suse:valid";
+else
+if [ -n "$red_ret2" ];
+then
+echo "red-hat6:valid";
+else
+if [ -n "$suse_ret3" ];
+then
+echo "suse:valid";
+else
+echo "ret:no value";
+fi
+fi;
+fi;
+unset red_ret suse_ret suse_ret2 suse_ret3;
+red-hat6:valid]]></value>
+		</script>
+		<script>
+			<id>44</id>
+			<value><![CDATA[FTPSTATUS=`ps -ef|grep -v grep|grep -i ftpd|wc -l`
+Check_ftp ()
+{
+if [ -f /etc/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd.conf";
+else
+if [ -f /etc/vsftpd/vsftpd.conf ];
+then
+FTPCONF="/etc/vsftpd/vsftpd.conf";
+fi;
+fi;
+if [ -f "$FTPCONF" ];
+then
+if ([ `grep -v "^#" $FTPCONF|grep -i "chroot_list_enable=YES"|wc -l` -eq 1 ] && [ `grep -v "^#" /etc/vsftpd/vsftpd.conf|grep -i "chroot_local_user=YES"|wc -l` -eq 0 ]);
+then
+if [ -s "`grep -v "^#" /etc/vsftpd/vsftpd.conf|grep -i "chroot_list_file"|cut -d\= -f2`" ]
+then
+echo "FTP is running.FTP check result:true"
+else
+echo "FTP is running.FTP check result:false"
+fi
+else
+echo "FTP is running.FTP check result:false"
+fi
+fi
+if [ -f /etc/pure-ftpd/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "ChrootEveryone";
+else
+if [ -f /etc/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "ChrootEveryone";
+fi;
+fi;
+if [ -f /etc/proftpd.conf ];
+then
+cat /etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "DefaultRoot";
+else
+if [ -f /etc/proftpd/proftpd.conf ];
+then
+cat /etc/proftpd/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "DefaultRoot";
+else
+if [ -f /usr/local/proftpd/etc/proftpd.conf ];
+then
+cat /usr/local/proftpd/etc/proftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|egrep -i "DefaultRoot";
+fi;
+fi;
+fi;
+if [ -f /etc/ftpaccess ];
+then
+cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "restricted-uid";
+else
+if [ -f /etc/ftpd/ftpaccess ];
+then
+cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "restricted-uid";
+fi;
+fi;
+unset FTPCONF;
+}
+if [ $FTPSTATUS -eq 0 ];
+then
+echo "FTP is not running.FTP check result:true";
+else
+Check_ftp;
+fi
+unset FTPSTATUS;
+FTP is not running.FTP check result:true]]></value>
+		</script>
+		<script>
+			<id>45</id>
+			<value><![CDATA[chkconfig --list
+netstat -an
+netconsole     	0:关	1:关	2:关	3:关	4:关	5:关	6:关
+network        	0:关	1:关	2:开	3:开	4:开	5:开	6:关
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.194.139:22      192.168.194.1:59522     ESTABLISHED
+tcp        0      0 192.168.194.139:22      192.168.194.1:59520     ESTABLISHED
+tcp        0      0 192.168.194.139:22      192.168.194.1:59424     ESTABLISHED
+tcp6       0      0 :::22                   :::*                    LISTEN     
+tcp6       0      0 ::1:25                  :::*                    LISTEN     
+udp        0      0 127.0.0.1:323           0.0.0.0:*                          
+udp        0      0 0.0.0.0:68              0.0.0.0:*                          
+udp6       0      0 ::1:323                 :::*                               
+raw6       0      0 :::58                   :::*                    7          
+Active UNIX domain sockets (servers and established)
+Proto RefCnt Flags       Type       State         I-Node   Path
+unix  2      [ ACC ]     STREAM     LISTENING     8710     /run/systemd/journal/stdout
+unix  6      [ ]         DGRAM                    8713     /run/systemd/journal/socket
+unix  18     [ ]         DGRAM                    8715     /dev/log
+unix  2      [ ACC ]     STREAM     LISTENING     28187    /var/run/docker/metrics.sock
+unix  2      [ ACC ]     STREAM     LISTENING     13348    /run/systemd/private
+unix  2      [ ACC ]     STREAM     LISTENING     28593    private/scache
+unix  2      [ ACC ]     STREAM     LISTENING     28536    private/tlsmgr
+unix  2      [ ACC ]     STREAM     LISTENING     28539    private/rewrite
+unix  2      [ ACC ]     STREAM     LISTENING     28542    private/bounce
+unix  2      [ ACC ]     STREAM     LISTENING     28545    private/defer
+unix  2      [ ACC ]     STREAM     LISTENING     28548    private/trace
+unix  2      [ ACC ]     STREAM     LISTENING     28551    private/verify
+unix  2      [ ACC ]     STREAM     LISTENING     28557    private/proxymap
+unix  2      [ ACC ]     STREAM     LISTENING     28560    private/proxywrite
+unix  2      [ ACC ]     STREAM     LISTENING     28563    private/smtp
+unix  2      [ ACC ]     STREAM     LISTENING     28566    private/relay
+unix  2      [ ACC ]     STREAM     LISTENING     28572    private/error
+unix  2      [ ACC ]     STREAM     LISTENING     28575    private/retry
+unix  2      [ ACC ]     STREAM     LISTENING     28578    private/discard
+unix  2      [ ACC ]     STREAM     LISTENING     28581    private/local
+unix  2      [ ACC ]     STREAM     LISTENING     28584    private/virtual
+unix  2      [ ACC ]     STREAM     LISTENING     28587    private/lmtp
+unix  2      [ ACC ]     STREAM     LISTENING     28590    private/anvil
+unix  2      [ ]         DGRAM                    14426    /run/systemd/shutdownd
+unix  2      [ ACC ]     STREAM     LISTENING     14428    /run/lvm/lvmpolld.socket
+unix  2      [ ]         DGRAM                    23137    /var/run/chrony/chronyd.sock
+unix  2      [ ACC ]     SEQPACKET  LISTENING     14436    /run/udev/control
+unix  2      [ ACC ]     STREAM     LISTENING     14438    /run/lvm/lvmetad.socket
+unix  2      [ ACC ]     STREAM     LISTENING     28011    /run/containerd/containerd.sock
+unix  2      [ ACC ]     STREAM     LISTENING     29346    /run/docker/libnetwork/a78d7e44d4930b2af482c3c6cf52cbb73174c69e01104088a12b39faf825bbfa.sock
+unix  2      [ ACC ]     STREAM     LISTENING     28525    public/pickup
+unix  2      [ ACC ]     STREAM     LISTENING     28529    public/cleanup
+unix  2      [ ACC ]     STREAM     LISTENING     28532    public/qmgr
+unix  2      [ ACC ]     STREAM     LISTENING     28554    public/flush
+unix  2      [ ACC ]     STREAM     LISTENING     28569    public/showq
+unix  2      [ ACC ]     STREAM     LISTENING     25562    /var/run/NetworkManager/private-dhcp
+unix  2      [ ACC ]     STREAM     LISTENING     21218    /run/dbus/system_bus_socket
+unix  2      [ ACC ]     STREAM     LISTENING     21222    /var/run/docker.sock
+unix  3      [ ]         DGRAM                    8690     /run/systemd/notify
+unix  2      [ ]         DGRAM                    8692     /run/systemd/cgroups-agent
+unix  2      [ ]         DGRAM                    28480    
+unix  2      [ ]         DGRAM                    23293    
+unix  3      [ ]         STREAM     CONNECTED     28206    
+unix  3      [ ]         STREAM     CONNECTED     28541    
+unix  3      [ ]         STREAM     CONNECTED     28531    
+unix  3      [ ]         STREAM     CONNECTED     28533    
+unix  3      [ ]         STREAM     CONNECTED     28534    
+unix  3      [ ]         STREAM     CONNECTED     28540    
+unix  3      [ ]         STREAM     CONNECTED     27596    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28538    
+unix  3      [ ]         STREAM     CONNECTED     17421    
+unix  3      [ ]         STREAM     CONNECTED     29549    
+unix  3      [ ]         STREAM     CONNECTED     28527    
+unix  3      [ ]         STREAM     CONNECTED     28537    
+unix  3      [ ]         STREAM     CONNECTED     28215    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     27021    
+unix  3      [ ]         STREAM     CONNECTED     20247    
+unix  2      [ ]         DGRAM                    28640    
+unix  3      [ ]         STREAM     CONNECTED     28549    
+unix  2      [ ]         DGRAM                    22695    
+unix  3      [ ]         STREAM     CONNECTED     27334    /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    188966   
+unix  3      [ ]         STREAM     CONNECTED     28550    
+unix  3      [ ]         STREAM     CONNECTED     28547    
+unix  3      [ ]         STREAM     CONNECTED     17140    
+unix  3      [ ]         STREAM     CONNECTED     28214    
+unix  3      [ ]         STREAM     CONNECTED     21419    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     17141    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28530    
+unix  3      [ ]         STREAM     CONNECTED     21387    
+unix  3      [ ]         STREAM     CONNECTED     28546    
+unix  3      [ ]         STREAM     CONNECTED     21389    /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    189628   
+unix  3      [ ]         STREAM     CONNECTED     28543    
+unix  3      [ ]         STREAM     CONNECTED     23082    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     24114    
+unix  3      [ ]         STREAM     CONNECTED     28544    
+unix  3      [ ]         STREAM     CONNECTED     22914    
+unix  2      [ ]         DGRAM                    28233    
+unix  3      [ ]         STREAM     CONNECTED     25109    
+unix  3      [ ]         STREAM     CONNECTED     28558    
+unix  3      [ ]         STREAM     CONNECTED     29550    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28555    
+unix  2      [ ]         DGRAM                    23126    
+unix  2      [ ]         DGRAM                    16384    
+unix  3      [ ]         STREAM     CONNECTED     28556    
+unix  2      [ ]         DGRAM                    24167    
+unix  2      [ ]         DGRAM                    16364    
+unix  3      [ ]         STREAM     CONNECTED     28553    
+unix  3      [ ]         STREAM     CONNECTED     28204    /run/containerd/containerd.sock
+unix  3      [ ]         STREAM     CONNECTED     20246    
+unix  3      [ ]         STREAM     CONNECTED     25110    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28207    /run/containerd/containerd.sock
+unix  3      [ ]         STREAM     CONNECTED     24160    /run/dbus/system_bus_socket
+unix  2      [ ]         DGRAM                    28104    
+unix  3      [ ]         STREAM     CONNECTED     28552    
+unix  3      [ ]         STREAM     CONNECTED     27333    /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    20235    
+unix  3      [ ]         STREAM     CONNECTED     23281    
+unix  3      [ ]         STREAM     CONNECTED     28203    
+unix  3      [ ]         STREAM     CONNECTED     28565    
+unix  3      [ ]         STREAM     CONNECTED     23282    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     24115    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28564    
+unix  3      [ ]         STREAM     CONNECTED     28561    
+unix  3      [ ]         STREAM     CONNECTED     28562    
+unix  3      [ ]         STREAM     CONNECTED     28559    
+unix  3      [ ]         STREAM     CONNECTED     26862    
+unix  3      [ ]         STREAM     CONNECTED     21827    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     22462    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28570    
+unix  3      [ ]         STREAM     CONNECTED     27434    
+unix  2      [ ]         DGRAM                    189395   
+unix  3      [ ]         STREAM     CONNECTED     189544   
+unix  3      [ ]         STREAM     CONNECTED     27595    
+unix  3      [ ]         STREAM     CONNECTED     28571    
+unix  3      [ ]         STREAM     CONNECTED     28524    
+unix  3      [ ]         STREAM     CONNECTED     189398   
+unix  2      [ ]         DGRAM                    22449    
+unix  3      [ ]         DGRAM                    17626    
+unix  3      [ ]         STREAM     CONNECTED     28573    
+unix  3      [ ]         STREAM     CONNECTED     21417    
+unix  3      [ ]         STREAM     CONNECTED     22460    
+unix  3      [ ]         DGRAM                    17625    
+unix  3      [ ]         STREAM     CONNECTED     28574    
+unix  3      [ ]         STREAM     CONNECTED     28577    
+unix  3      [ ]         STREAM     CONNECTED     189399   
+unix  3      [ ]         STREAM     CONNECTED     28576    
+unix  3      [ ]         STREAM     CONNECTED     28579    
+unix  3      [ ]         STREAM     CONNECTED     27435    /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    17556    
+unix  2      [ ]         DGRAM                    189541   
+unix  3      [ ]         STREAM     CONNECTED     23954    /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28580    
+unix  3      [ ]         STREAM     CONNECTED     23953    
+unix  3      [ ]         STREAM     CONNECTED     28583    
+unix  3      [ ]         STREAM     CONNECTED     189545   
+unix  3      [ ]         STREAM     CONNECTED     28582    
+unix  3      [ ]         STREAM     CONNECTED     28585    
+unix  2      [ ]         DGRAM                    27342    
+unix  3      [ ]         STREAM     CONNECTED     24159    
+unix  3      [ ]         STREAM     CONNECTED     28586    
+unix  3      [ ]         STREAM     CONNECTED     28567    
+unix  3      [ ]         STREAM     CONNECTED     21418    
+unix  3      [ ]         STREAM     CONNECTED     28589    
+unix  3      [ ]         STREAM     CONNECTED     28568    
+unix  3      [ ]         STREAM     CONNECTED     28588    
+unix  2      [ ]         DGRAM                    188378   
+unix  3      [ ]         STREAM     CONNECTED     28591    
+unix  3      [ ]         STREAM     CONNECTED     21780    
+unix  3      [ ]         STREAM     CONNECTED     21338    
+unix  3      [ ]         STREAM     CONNECTED     28592    
+unix  2      [ ]         DGRAM                    188665   
+unix  3      [ ]         STREAM     CONNECTED     17422    /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28596    
+unix  3      [ ]         STREAM     CONNECTED     28523    
+unix  2      [ ]         DGRAM                    24137    
+unix  3      [ ]         STREAM     CONNECTED     28595    
+unix  3      [ ]         STREAM     CONNECTED     28526    ]]></value>
+		</script>
+		<script>
+			<id>46</id>
+			<value><![CDATA[cat /etc/pam.d/su|grep -v "^[[:space:]]*#"|grep -v "^$"|grep "^auth"
+auth		sufficient	pam_rootok.so
+auth		substack	system-auth
+auth		include		postlogin]]></value>
+		</script>
+		<script>
+			<id>47</id>
+			<value><![CDATA[if [ `ps -ef|grep ftpd|grep -v "grep"|wc -l` -ge 1 ];
+then
+if [ -f /etc/vsftpd.conf ];
+then
+cat /etc/vsftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "anonymous_enable";
+else
+if [ -f /etc/vsftpd/vsftpd.conf ];
+then
+cat /etc/vsftpd/vsftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "anonymous_enable";
+fi
+fi;
+if [ -f /etc/ftpaccess ];
+then
+if ([ `cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^class\s*[^\s]\{1,\}\s*.*guest"|wc -l` -ne 0 ] || [ `cat /etc/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^class\s*[^\s]\{1,\}\s*.*anonymous"|wc -l` -ne 0 ]);
+then
+echo "wu-ftp There are anonymous logins";
+else
+echo "wu-ftp There is no anonymous logins";
+fi;
+else
+if [ -f /etc/ftpd/ftpaccess ];
+then
+if ([ `cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^class\s*[^\s]\{1,\}\s*.*guest"|wc -l` -ne 0 ] || [ `cat /etc/ftpd/ftpaccess|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep "^class\s*[^\s]\{1,\}\s*.*anonymous"|wc -l` -ne 0 ]);
+then
+echo "wu-ftp There are anonymous logins";
+else
+echo "wu-ftp There is no anonymous logins";
+fi;
+fi;
+fi;
+if [ -f /etc/proftpd.conf ];
+then
+Anonymous_1=`cat /etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|grep -i "AnonRequirePassword[[:space:]]*on"|wc -l`;
+Anonymous_2=`cat /etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|egrep -i "User|Group|UserAlias"|wc -l`;
+if ([ $Anonymous_1 -ge 1 ] || [ $Anonymous_2 -lt 3 ])
+then
+echo "proftp There is no anonymous logins";
+else
+echo "proftp There are anonymous logins";
+fi;
+else
+if [ -f /etc/proftpd/proftpd.conf ];
+then
+Anonymous_1=`cat /etc/proftpd/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|grep -i "AnonRequirePassword[[:space:]]*on"|wc -l`;
+Anonymous_2=`cat /etc/proftpd/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|egrep -i "User|Group|UserAlias"|wc -l`;
+if ([ $Anonymous_1 -ge 1 ] || [ $Anonymous_2 -lt 3 ])
+then
+echo "proftp There is no anonymous logins";
+else
+echo "proftp There are anonymous logins";
+fi;
+else
+if [ -f /usr/local/proftpd/etc/proftpd.conf ];
+then
+Anonymous_1=`cat /usr/local/proftpd/etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|grep -i "AnonRequirePassword[[:space:]]*on"|wc -l`;
+Anonymous_2=`cat /usr/local/proftpd/etc/proftpd.conf|sed '/^\s*#/d'|sed '/^\s*$/d'|sed -n '/<Anonymous.*/,/<\/Anonymous&gt;/p'|egrep -i "User|Group|UserAlias"|wc -l`;
+if ([ $Anonymous_1 -ge 1 ] || [ $Anonymous_2 -lt 3 ])
+then
+echo "proftp There is no anonymous logins";
+else
+echo "proftp There are anonymous logins";
+fi;
+fi;
+fi;
+fi;
+if [ -f /etc/pure-ftpd/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "NoAnonymous";
+else
+if [ -f /etc/pure-ftpd.conf ];
+then
+cat /etc/pure-ftpd.conf|grep -v "^[[:space:]]*#"|grep -v "^[[:space:]]*$"|grep -i "NoAnonymous";
+fi;
+fi;
+else
+echo "ftp is not running,result=true";
+fi;
+ftp is not running,result=true]]></value>
+		</script>
+		<script>
+			<id>48</id>
+			<value><![CDATA[redhat_count=0
+suse_count=0
+result=0
+telnet_status=`netstat -an|grep ":23\&gt;"|grep -i listen|wc -l`;
+if [ -s /etc/issue ]
+then cat /etc/issue
+redhat_count=`cat /etc/issue | grep -i "Red Hat" | wc -l`
+suse_count=`cat /etc/issue | grep -i "suse" | wc -l`
+fi
+if ([ $redhat_count -ge 1 ] || [ $suse_count -ge 1 ])
+then result=1
+fi
+if [ -s /etc/issue.net ]
+then cat /etc/issue.net
+redhat_count=`cat /etc/issue.net | grep -i "Red Hat" | wc -l`
+suse_count=`cat /etc/issue.net | grep -i "suse" | wc -l`
+fi
+if ([ $redhat_count -ge 1 ] || [ $suse_count -ge 1 ])
+then result=1
+fi
+if ([ $result = 1 ] && [ $telnet_status = 1 ]);
+then
+echo "telnet is running.telnet banner is not valid.telnet banner check result:false";
+else
+if [ $result = 1 ];
+then
+echo "telnet is not running.telnet banner is not valid.telnet banner check result:true";
+else
+if [ $telnet_status = 1 ];
+then
+echo "telnet is running.telnet banner is valid.telnet banner check result:true";
+else
+echo "telnet is not running.telnet banner is valid.telnet banner check result:true";
+fi;
+fi;
+fi;
+unset redhat_count suse_count result
+\S
+Kernel \r on an \m
+
+\S
+Kernel \r on an \m
+telnet is not running.telnet banner is valid.telnet banner check result:true]]></value>
+		</script>
+		<script>
+			<id>49</id>
+			<value><![CDATA[if [ -f /etc/syslog.conf ]
+then
+echo "syslog="`cat /etc/syslog.conf | grep -v "^[[:space:]]*#" | grep "cron.\*"`
+fi
+if [ -f /etc/rsyslog.conf ]
+then
+echo "rsyslog="`cat /etc/rsyslog.conf | grep -v "^[[:space:]]*#" | grep "cron.\*"`
+fi
+if [ -s /etc/syslog-ng/syslog-ng.conf ];
+then
+cron_1=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "filter[[:space:]]*.*[[:space:]]*{[[:space:]]*facility(cron);[[:space:]]*};" | wc -l`;
+if [ $cron_1 -ge 1 ];
+then
+cron_2=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "destination[[:space:]]*.*[[:space:]]*{[[:space:]]*file(\"/var/log/cron\")[[:space:]]*;[[:space:]]*};"|awk '{print $2}'`;
+if [ -n $cron_2 ];
+then
+cron_3=`cat /etc/syslog-ng/syslog-ng.conf | grep -v "^[[:space:]]*#" | grep "log[[:space:]]*{[[:space:]]*source(src);[[:space:]]*filter(.*);[[:space:]]*destination($cron_2);[[:space:]]*};" | wc -l`;
+if [ $cron_3 -ge 1 ]
+then
+echo "Cron log has been configured,check result:true";
+else
+echo "No cron log,check result:false";
+fi;
+fi;
+fi;
+fi;
+rsyslog=cron.* /var/log/cron]]></value>
+		</script>
+		<script>
+			<id>50</id>
+			<value><![CDATA[lsattr /var/log/messages 2&gt;/dev/null
+---------------- /var/log/messages]]></value>
+		</script>
+		<script>
+			<id>51</id>
+			<value><![CDATA[cat /proc/sys/net/ipv4/conf/*/accept_source_route
+0
+0
+0
+0
+0
+0
+1]]></value>
+		</script>
+		<script>
+			<id>52</id>
+			<value><![CDATA[cat /proc/sys/net/ipv4/tcp_syncookies
+1]]></value>
+		</script>
+		<script>
+			<id>53</id>
+			<value><![CDATA[cat /etc/host.conf|grep -v "^[[:space:]]*#"|egrep "order[[:space:]]hosts,bind|multi[[:space:]]on|nospoof[[:space:]]on"
+multi on]]></value>
+		</script>
+		<script>
+			<id>54</id>
+			<value><![CDATA[cat /etc/profile|grep -v "^[[:space:]]*#"|grep "HISTFILESIZE"
+cat /etc/profile|grep -v "^[[:space:]]*#"|grep "HISTSIZE"
+HISTSIZE=1000
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL]]></value>
+		</script>
+		<script>
+			<id>55</id>
+			<value><![CDATA[if [ `echo $SHELL|egrep "bash|sh"|wc -l` -ge 1 ]
+then
+cat /root/.bashrc|grep -v "^[[:space:]]*#"
+else
+cat /root/.cshrc|grep -v "^[[:space:]]*#"
+fi
+
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi]]></value>
+		</script>
+		<script>
+			<id>4596</id>
+			<value><![CDATA[openssl version
+lsb_release -a
+OpenSSL 1.0.2k-fips  26 Jan 2017]]></value>
+		</script>
+		<script>
+			<id>4597</id>
+			<value><![CDATA[env -i  X='() { (a)=&gt;\' bash -c '/dev/stdout echo vulnerable'  2&gt;/dev/null]]></value>
+		</script>
+		<script>
+			<id>-11</id>
+			<value><![CDATA[hostname
+localhost.localdomain]]></value>
+		</script>
+		<script>
+			<id>-12</id>
+			<value><![CDATA[lsb_release -a]]></value>
+		</script>
+		<script>
+			<id>-13</id>
+			<value><![CDATA[cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:999:998:User for polkitd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+chrony:x:998:996::/var/lib/chrony:/sbin/nologin
+test:x:1000:1000::/home/test:/bin/bash]]></value>
+		</script>
+		<script>
+			<id>-14</id>
+			<value><![CDATA[cat /etc/group
+root:x:0:
+bin:x:1:
+daemon:x:2:
+sys:x:3:
+adm:x:4:
+tty:x:5:
+disk:x:6:
+lp:x:7:
+mem:x:8:
+kmem:x:9:
+wheel:x:10:
+cdrom:x:11:
+mail:x:12:postfix
+man:x:15:
+dialout:x:18:
+floppy:x:19:
+games:x:20:
+tape:x:33:
+video:x:39:
+ftp:x:50:
+lock:x:54:
+audio:x:63:
+nobody:x:99:
+users:x:100:
+utmp:x:22:
+utempter:x:35:
+input:x:999:
+systemd-journal:x:190:
+systemd-network:x:192:
+dbus:x:81:
+polkitd:x:998:
+ssh_keys:x:997:
+sshd:x:74:
+postdrop:x:90:
+postfix:x:89:
+chrony:x:996:
+cgred:x:995:
+docker:x:994:
+test:x:1000:]]></value>
+		</script>
+		<script>
+			<id>-15</id>
+			<value><![CDATA[cat /etc/shadow
+root:$6$pAhYAIiOBPTCRE.s$TnvpuZu5GJxfe9Dh7MwscFQ4PImTWo4.83D0hvJ4/vLX.xGFsz9aUoGyYNkQ9UBWKI2vZw0ik2grc0lTdvejs/::0:99999:7:::
+bin:*:17632:0:99999:7:::
+daemon:*:17632:0:99999:7:::
+adm:*:17632:0:99999:7:::
+lp:*:17632:0:99999:7:::
+sync:*:17632:0:99999:7:::
+shutdown:*:17632:0:99999:7:::
+halt:*:17632:0:99999:7:::
+mail:*:17632:0:99999:7:::
+operator:*:17632:0:99999:7:::
+games:*:17632:0:99999:7:::
+ftp:*:17632:0:99999:7:::
+nobody:*:17632:0:99999:7:::
+systemd-network:!!:17844::::::
+dbus:!!:17844::::::
+polkitd:!!:17844::::::
+sshd:!!:17844::::::
+postfix:!!:17844::::::
+chrony:!!:17844::::::
+test:$6$vgPGmn4i$gIN3e..IdQuOio2val5vaPRj3WqeENE8LNtFp02yh0/xZ19xFq4IbeFBc5SPGYRhe8WXoaFN1EAAzcKNpZvFt.:18245:0:99999:7:::]]></value>
+		</script>
+		<script>
+			<id>-16</id>
+			<value><![CDATA[chkconfig --list
+netconsole     	0:关	1:关	2:关	3:关	4:关	5:关	6:关
+network        	0:关	1:关	2:开	3:开	4:开	5:开	6:关]]></value>
+		</script>
+		<script>
+			<id>-17</id>
+			<value><![CDATA[netstat -anp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1000/sshd           
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      1185/master         
+tcp        0      0 192.168.194.139:22      192.168.194.1:59522     ESTABLISHED 28146/sshd: test [p 
+tcp        0      0 192.168.194.139:22      192.168.194.1:59520     ESTABLISHED 28130/sshd: test [p 
+tcp        0      0 192.168.194.139:22      192.168.194.1:59424     ESTABLISHED 28016/sshd: root@pt 
+tcp6       0      0 :::22                   :::*                    LISTEN      1000/sshd           
+tcp6       0      0 ::1:25                  :::*                    LISTEN      1185/master         
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           638/chronyd         
+udp        0      0 0.0.0.0:68              0.0.0.0:*                           28047/dhclient      
+udp6       0      0 ::1:323                 :::*                                638/chronyd         
+raw6       0      0 :::58                   :::*                    7           662/NetworkManager  
+Active UNIX domain sockets (servers and established)
+Proto RefCnt Flags       Type       State         I-Node   PID/Program name     Path
+unix  2      [ ACC ]     STREAM     LISTENING     8710     1/systemd            /run/systemd/journal/stdout
+unix  6      [ ]         DGRAM                    8713     1/systemd            /run/systemd/journal/socket
+unix  18     [ ]         DGRAM                    8715     1/systemd            /dev/log
+unix  2      [ ACC ]     STREAM     LISTENING     28187    1010/dockerd         /var/run/docker/metrics.sock
+unix  2      [ ACC ]     STREAM     LISTENING     13348    1/systemd            /run/systemd/private
+unix  2      [ ACC ]     STREAM     LISTENING     28593    1185/master          private/scache
+unix  2      [ ACC ]     STREAM     LISTENING     28536    1185/master          private/tlsmgr
+unix  2      [ ACC ]     STREAM     LISTENING     28539    1185/master          private/rewrite
+unix  2      [ ACC ]     STREAM     LISTENING     28542    1185/master          private/bounce
+unix  2      [ ACC ]     STREAM     LISTENING     28545    1185/master          private/defer
+unix  2      [ ACC ]     STREAM     LISTENING     28548    1185/master          private/trace
+unix  2      [ ACC ]     STREAM     LISTENING     28551    1185/master          private/verify
+unix  2      [ ACC ]     STREAM     LISTENING     28557    1185/master          private/proxymap
+unix  2      [ ACC ]     STREAM     LISTENING     28560    1185/master          private/proxywrite
+unix  2      [ ACC ]     STREAM     LISTENING     28563    1185/master          private/smtp
+unix  2      [ ACC ]     STREAM     LISTENING     28566    1185/master          private/relay
+unix  2      [ ACC ]     STREAM     LISTENING     28572    1185/master          private/error
+unix  2      [ ACC ]     STREAM     LISTENING     28575    1185/master          private/retry
+unix  2      [ ACC ]     STREAM     LISTENING     28578    1185/master          private/discard
+unix  2      [ ACC ]     STREAM     LISTENING     28581    1185/master          private/local
+unix  2      [ ACC ]     STREAM     LISTENING     28584    1185/master          private/virtual
+unix  2      [ ACC ]     STREAM     LISTENING     28587    1185/master          private/lmtp
+unix  2      [ ACC ]     STREAM     LISTENING     28590    1185/master          private/anvil
+unix  2      [ ]         DGRAM                    14426    1/systemd            /run/systemd/shutdownd
+unix  2      [ ACC ]     STREAM     LISTENING     14428    1/systemd            /run/lvm/lvmpolld.socket
+unix  2      [ ]         DGRAM                    23137    638/chronyd          /var/run/chrony/chronyd.sock
+unix  2      [ ACC ]     SEQPACKET  LISTENING     14436    1/systemd            /run/udev/control
+unix  2      [ ACC ]     STREAM     LISTENING     14438    1/systemd            /run/lvm/lvmetad.socket
+unix  2      [ ACC ]     STREAM     LISTENING     28011    1009/containerd      /run/containerd/containerd.sock
+unix  2      [ ACC ]     STREAM     LISTENING     29346    1010/dockerd         /run/docker/libnetwork/a78d7e44d4930b2af482c3c6cf52cbb73174c69e01104088a12b39faf825bbfa.sock
+unix  2      [ ACC ]     STREAM     LISTENING     28525    1185/master          public/pickup
+unix  2      [ ACC ]     STREAM     LISTENING     28529    1185/master          public/cleanup
+unix  2      [ ACC ]     STREAM     LISTENING     28532    1185/master          public/qmgr
+unix  2      [ ACC ]     STREAM     LISTENING     28554    1185/master          public/flush
+unix  2      [ ACC ]     STREAM     LISTENING     28569    1185/master          public/showq
+unix  2      [ ACC ]     STREAM     LISTENING     25562    662/NetworkManager   /var/run/NetworkManager/private-dhcp
+unix  2      [ ACC ]     STREAM     LISTENING     21218    1/systemd            /run/dbus/system_bus_socket
+unix  2      [ ACC ]     STREAM     LISTENING     21222    1/systemd            /var/run/docker.sock
+unix  3      [ ]         DGRAM                    8690     1/systemd            /run/systemd/notify
+unix  2      [ ]         DGRAM                    8692     1/systemd            /run/systemd/cgroups-agent
+unix  2      [ ]         DGRAM                    28480    1185/master          
+unix  2      [ ]         DGRAM                    23293    632/polkitd          
+unix  3      [ ]         STREAM     CONNECTED     28206    1010/dockerd         
+unix  3      [ ]         STREAM     CONNECTED     28541    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28531    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28533    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28534    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28540    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     27596    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28538    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     17421    493/systemd-udevd    
+unix  3      [ ]         STREAM     CONNECTED     29549    999/python           
+unix  3      [ ]         STREAM     CONNECTED     28527    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28537    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28215    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     27021    1000/sshd            
+unix  3      [ ]         STREAM     CONNECTED     20247    570/auditd           
+unix  2      [ ]         DGRAM                    28640    1196/qmgr            
+unix  3      [ ]         STREAM     CONNECTED     28549    1185/master          
+unix  2      [ ]         DGRAM                    22695    638/chronyd          
+unix  3      [ ]         STREAM     CONNECTED     27334    1/systemd            /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    188966   28047/dhclient       
+unix  3      [ ]         STREAM     CONNECTED     28550    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28547    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     17140    488/lvmetad          
+unix  3      [ ]         STREAM     CONNECTED     28214    1010/dockerd         
+unix  3      [ ]         STREAM     CONNECTED     21419    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     17141    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28530    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     21387    627/dbus-daemon      
+unix  3      [ ]         STREAM     CONNECTED     28546    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     21389    1/systemd            /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    189628   28172/su             
+unix  3      [ ]         STREAM     CONNECTED     28543    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     23082    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     24114    662/NetworkManager   
+unix  3      [ ]         STREAM     CONNECTED     28544    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     22914    641/crond            
+unix  2      [ ]         DGRAM                    28233    660/python           
+unix  3      [ ]         STREAM     CONNECTED     25109    662/NetworkManager   
+unix  3      [ ]         STREAM     CONNECTED     28558    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     29550    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28555    1185/master          
+unix  2      [ ]         DGRAM                    23126    641/crond            
+unix  2      [ ]         DGRAM                    16384    1/systemd            
+unix  3      [ ]         STREAM     CONNECTED     28556    1185/master          
+unix  2      [ ]         DGRAM                    24167    627/dbus-daemon      
+unix  2      [ ]         DGRAM                    16364    461/systemd-journal  
+unix  3      [ ]         STREAM     CONNECTED     28553    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28204    1009/containerd      /run/containerd/containerd.sock
+unix  3      [ ]         STREAM     CONNECTED     20246    570/auditd           
+unix  3      [ ]         STREAM     CONNECTED     25110    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28207    1009/containerd      /run/containerd/containerd.sock
+unix  3      [ ]         STREAM     CONNECTED     24160    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  2      [ ]         DGRAM                    28104    1010/dockerd         
+unix  3      [ ]         STREAM     CONNECTED     28552    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     27333    1/systemd            /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    20235    570/auditd           
+unix  3      [ ]         STREAM     CONNECTED     23281    632/polkitd          
+unix  3      [ ]         STREAM     CONNECTED     28203    1010/dockerd         
+unix  3      [ ]         STREAM     CONNECTED     28565    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     23282    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     24115    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28564    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28561    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28562    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28559    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     26862    999/python           
+unix  3      [ ]         STREAM     CONNECTED     21827    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     22462    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28570    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     27434    1009/containerd      
+unix  2      [ ]         DGRAM                    189395   28130/sshd: test [p  
+unix  3      [ ]         STREAM     CONNECTED     189544   28150/sshd: test@pt  
+unix  3      [ ]         STREAM     CONNECTED     27595    1010/dockerd         
+unix  3      [ ]         STREAM     CONNECTED     28571    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28524    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     189398   28134/sshd: test@no  
+unix  2      [ ]         DGRAM                    22449    630/systemd-logind   
+unix  3      [ ]         DGRAM                    17626    493/systemd-udevd    
+unix  3      [ ]         STREAM     CONNECTED     28573    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     21417    627/dbus-daemon      
+unix  3      [ ]         STREAM     CONNECTED     22460    630/systemd-logind   
+unix  3      [ ]         DGRAM                    17625    493/systemd-udevd    
+unix  3      [ ]         STREAM     CONNECTED     28574    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28577    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     189399   28130/sshd: test [p  
+unix  3      [ ]         STREAM     CONNECTED     28576    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28579    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     27435    1/systemd            /run/systemd/journal/stdout
+unix  2      [ ]         DGRAM                    17556    493/systemd-udevd    
+unix  2      [ ]         DGRAM                    189541   28146/sshd: test [p  
+unix  3      [ ]         STREAM     CONNECTED     23954    627/dbus-daemon      /run/dbus/system_bus_socket
+unix  3      [ ]         STREAM     CONNECTED     28580    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     23953    660/python           
+unix  3      [ ]         STREAM     CONNECTED     28583    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     189545   28146/sshd: test [p  
+unix  3      [ ]         STREAM     CONNECTED     28582    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28585    1185/master          
+unix  2      [ ]         DGRAM                    27342    1001/rsyslogd        
+unix  3      [ ]         STREAM     CONNECTED     24159    662/NetworkManager   
+unix  3      [ ]         STREAM     CONNECTED     28586    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28567    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     21418    627/dbus-daemon      
+unix  3      [ ]         STREAM     CONNECTED     28589    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28568    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28588    1185/master          
+unix  2      [ ]         DGRAM                    188378   27988/pickup         
+unix  3      [ ]         STREAM     CONNECTED     28591    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     21780    630/systemd-logind   
+unix  3      [ ]         STREAM     CONNECTED     21338    1/systemd            
+unix  3      [ ]         STREAM     CONNECTED     28592    1185/master          
+unix  2      [ ]         DGRAM                    188665   28016/sshd: root@pt  
+unix  3      [ ]         STREAM     CONNECTED     17422    1/systemd            /run/systemd/journal/stdout
+unix  3      [ ]         STREAM     CONNECTED     28596    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28523    1185/master          
+unix  2      [ ]         DGRAM                    24137    662/NetworkManager   
+unix  3      [ ]         STREAM     CONNECTED     28595    1185/master          
+unix  3      [ ]         STREAM     CONNECTED     28526    1185/master          ]]></value>
+		</script>
+		<script>
+			<id>-18</id>
+			<value><![CDATA[ps -ef
+UID         PID   PPID  C STIME TTY          TIME CMD
+root          1      0  0 12月18 ?      00:00:07 /usr/lib/systemd/systemd --switched-root --system --deserialize 22
+root          2      0  0 12月18 ?      00:00:00 [kthreadd]
+root          3      2  0 12月18 ?      00:00:00 [ksoftirqd/0]
+root          5      2  0 12月18 ?      00:00:00 [kworker/0:0H]
+root          7      2  0 12月18 ?      00:00:00 [migration/0]
+root          8      2  0 12月18 ?      00:00:00 [rcu_bh]
+root          9      2  0 12月18 ?      00:00:01 [rcu_sched]
+root         10      2  0 12月18 ?      00:00:00 [lru-add-drain]
+root         11      2  0 12月18 ?      00:00:00 [watchdog/0]
+root         13      2  0 12月18 ?      00:00:00 [kdevtmpfs]
+root         14      2  0 12月18 ?      00:00:00 [netns]
+root         15      2  0 12月18 ?      00:00:00 [khungtaskd]
+root         16      2  0 12月18 ?      00:00:00 [writeback]
+root         17      2  0 12月18 ?      00:00:00 [kintegrityd]
+root         18      2  0 12月18 ?      00:00:00 [bioset]
+root         19      2  0 12月18 ?      00:00:00 [kblockd]
+root         20      2  0 12月18 ?      00:00:00 [md]
+root         21      2  0 12月18 ?      00:00:00 [edac-poller]
+root         27      2  0 12月18 ?      00:00:00 [kswapd0]
+root         28      2  0 12月18 ?      00:00:00 [ksmd]
+root         29      2  0 12月18 ?      00:00:00 [khugepaged]
+root         30      2  0 12月18 ?      00:00:00 [crypto]
+root         38      2  0 12月18 ?      00:00:00 [kthrotld]
+root         40      2  0 12月18 ?      00:00:00 [kmpath_rdacd]
+root         41      2  0 12月18 ?      00:00:00 [kaluad]
+root         42      2  0 12月18 ?      00:00:00 [kpsmoused]
+root         44      2  0 12月18 ?      00:00:00 [ipv6_addrconf]
+root         57      2  0 12月18 ?      00:00:00 [deferwq]
+root         88      2  0 12月18 ?      00:00:00 [kauditd]
+root        264      2  0 12月18 ?      00:00:00 [mpt_poll_0]
+root        265      2  0 12月18 ?      00:00:00 [mpt/0]
+root        266      2  0 12月18 ?      00:00:00 [ata_sff]
+root        272      2  0 12月18 ?      00:00:00 [scsi_eh_0]
+root        273      2  0 12月18 ?      00:00:00 [scsi_tmf_0]
+root        276      2  0 12月18 ?      00:00:00 [scsi_eh_1]
+root        279      2  0 12月18 ?      00:00:00 [scsi_tmf_1]
+root        280      2  0 12月18 ?      00:00:00 [scsi_eh_2]
+root        282      2  0 12月18 ?      00:00:00 [scsi_tmf_2]
+root        286      2  0 12月18 ?      00:00:00 [ttm_swap]
+root        287      2  0 12月18 ?      00:00:00 [irq/16-vmwgfx]
+root        318      2  0 12月18 ?      00:00:00 [kworker/0:1H]
+root        359      2  0 12月18 ?      00:00:00 [kdmflush]
+root        360      2  0 12月18 ?      00:00:00 [bioset]
+root        370      2  0 12月18 ?      00:00:00 [kdmflush]
+root        371      2  0 12月18 ?      00:00:00 [bioset]
+root        383      2  0 12月18 ?      00:00:00 [bioset]
+root        384      2  0 12月18 ?      00:00:00 [xfsalloc]
+root        385      2  0 12月18 ?      00:00:00 [xfs_mru_cache]
+root        386      2  0 12月18 ?      00:00:00 [xfs-buf/dm-0]
+root        387      2  0 12月18 ?      00:00:00 [xfs-data/dm-0]
+root        388      2  0 12月18 ?      00:00:00 [xfs-conv/dm-0]
+root        389      2  0 12月18 ?      00:00:00 [xfs-cil/dm-0]
+root        390      2  0 12月18 ?      00:00:00 [xfs-reclaim/dm-]
+root        391      2  0 12月18 ?      00:00:00 [xfs-log/dm-0]
+root        392      2  0 12月18 ?      00:00:00 [xfs-eofblocks/d]
+root        393      2  0 12月18 ?      00:00:08 [xfsaild/dm-0]
+root        461      1  0 12月18 ?      00:00:04 /usr/lib/systemd/systemd-journald
+root        488      1  0 12月18 ?      00:00:00 /usr/sbin/lvmetad -f
+root        493      1  0 12月18 ?      00:00:00 /usr/lib/systemd/systemd-udevd
+root        514      2  0 12月18 ?      00:00:00 [nfit]
+root        523      2  0 12月18 ?      00:00:00 [xfs-buf/sda1]
+root        524      2  0 12月18 ?      00:00:00 [xfs-data/sda1]
+root        525      2  0 12月18 ?      00:00:00 [xfs-conv/sda1]
+root        526      2  0 12月18 ?      00:00:00 [xfs-cil/sda1]
+root        527      2  0 12月18 ?      00:00:00 [xfs-reclaim/sda]
+root        528      2  0 12月18 ?      00:00:00 [xfs-log/sda1]
+root        529      2  0 12月18 ?      00:00:00 [xfs-eofblocks/s]
+root        532      2  0 12月18 ?      00:00:00 [xfsaild/sda1]
+root        570      1  0 12月18 ?      00:00:00 /sbin/auditd
+dbus        627      1  0 12月18 ?      00:00:02 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation
+root        630      1  0 12月18 ?      00:00:01 /usr/lib/systemd/systemd-logind
+polkitd     632      1  0 12月18 ?      00:00:00 /usr/lib/polkit-1/polkitd --no-debug
+chrony      638      1  0 12月18 ?      00:00:00 /usr/sbin/chronyd
+root        641      1  0 12月18 ?      00:00:00 /usr/sbin/crond -n
+root        644      1  0 12月18 ?      00:00:00 login -- root
+root        660      1  0 12月18 ?      00:00:02 /usr/bin/python -Es /usr/sbin/firewalld --nofork --nopid
+root        661      2  0 12月18 ?      00:00:00 [kvm-irqfd-clean]
+root        662      1  0 12月18 ?      00:00:05 /usr/sbin/NetworkManager --no-daemon
+root        999      1  0 12月18 ?      00:00:08 /usr/bin/python -Es /usr/sbin/tuned -l -P
+root       1000      1  0 12月18 ?      00:00:00 /usr/sbin/sshd -D
+root       1001      1  0 12月18 ?      00:00:04 /usr/sbin/rsyslogd -n
+root       1009      1  0 12月18 ?      00:02:14 /usr/bin/containerd
+root       1010      1  0 12月18 ?      00:00:18 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+root       1185      1  0 12月18 ?      00:00:00 /usr/libexec/postfix/master -w
+postfix    1196   1185  0 12月18 ?      00:00:00 qmgr -l -t unix -u
+root       1513    644  0 12月18 tty1   00:00:00 -bash
+root      13925      2  0 07:19 ?        00:00:00 [kworker/u256:2]
+root      21980      2  0 09:36 ?        00:00:00 [kworker/u256:1]
+root      27341      2  0 12:22 ?        00:00:01 [kworker/0:1]
+root      27987      2  0 12:32 ?        00:00:00 [kworker/0:0]
+postfix   27988   1185  0 12:35 ?        00:00:00 pickup -l -t unix -u
+root      28015      2  0 12:37 ?        00:00:00 [kworker/0:2]
+root      28016   1000  0 12:38 ?        00:00:00 sshd: root@pts/0
+root      28020  28016  0 12:38 pts/0    00:00:00 -bash
+root      28047    662  0 12:41 ?        00:00:00 /sbin/dhclient -d -q -sf /usr/libexec/nm-dhcp-helper -pf /var/run/dhclient-ens33.pid -lf /var/lib/NetworkManager/dhclient-cd445a61-3739-4d81-a729-4cad4ea9b207-ens33.lease -cf /var/lib/NetworkManager/dhclient-ens33.conf ens33
+root      28128      2  0 12:41 ?        00:00:00 [kworker/0:3]
+root      28130   1000  3 12:44 ?        00:00:00 sshd: test [priv]
+test      28134  28130  0 12:44 ?        00:00:00 sshd: test@notty
+root      28146   1000  3 12:44 ?        00:00:00 sshd: test [priv]
+test      28150  28146  0 12:44 ?        00:00:00 sshd: test@pts/1
+test      28151  28150  0 12:44 pts/1    00:00:00 -bash
+root      28172  28151  0 12:44 pts/1    00:00:00 su
+root      28176  28172  0 12:44 pts/1    00:00:00 bash
+root      28187  28176  0 12:44 pts/1    00:00:00 bash check_server_linux.sh 192.168.194.139
+root      28189  28187  1 12:44 pts/1    00:00:00 perl /tmp/Linux/check_server_linux.pl 192.168.194.139
+root      28710  28189  0 12:44 pts/1    00:00:00 ps -ef]]></value>
+		</script>
+		<script>
+			<id>-19</id>
+			<value><![CDATA[uname -r
+3.10.0-862.el7.x86_64]]></value>
+		</script>
+		<script>
+			<id>-20</id>
+			<value><![CDATA[w -h
+root     tty1                      三23   13:12m  0.08s  0.08s -bash
+root     pts/0    192.168.194.1    12:38    5:51   0.01s  0.01s -bash
+test     pts/1    192.168.194.1    12:44    5.00s  0.02s  0.19s sshd: test [priv]   ]]></value>
+		</script>
+		<script>
+			<id>-22</id>
+			<value><![CDATA[w -fh
+root     tty1      三23   13:12m  0.08s  0.08s -bash
+root     pts/0     12:38    5:51   0.01s  0.01s -bash
+test     pts/1     12:44    5.00s  0.02s  0.19s sshd: test [priv]   ]]></value>
+		</script>
+		<script>
+			<id>-21</id>
+			<value><![CDATA[/sbin/ifconfig -a
+br-9695002569de: flags=4099<UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 172.19.0.1  netmask 255.255.0.0  broadcast 172.19.255.255
+        ether 02:42:ee:a3:ac:d5  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+br-f143d4cd2282: flags=4099<UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 172.18.0.1  netmask 255.255.0.0  broadcast 172.18.255.255
+        ether 02:42:d3:47:72:ab  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:7e:2c:7b:17  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.194.139  netmask 255.255.255.0  broadcast 192.168.194.255
+        inet6 fe80::8960:348e:4ddf:cd71  prefixlen 64  scopeid 0x20<link&gt;
+        ether 00:0c:29:a4:4f:b5  txqueuelen 1000  (Ethernet)
+        RX packets 19188  bytes 4468220 (4.2 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 13536  bytes 2373532 (2.2 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host&gt;
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 260  bytes 22880 (22.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 260  bytes 22880 (22.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+]]></value>
+		</script>
+		<script>
+			<id>-24</id>
+			<value><![CDATA[df
+文件系统                  1K-块    已用    可用 已用% 挂载点
+/dev/mapper/centos-root 4597760 1571104 3026656   35% /
+devtmpfs                 486708       0  486708    0% /dev
+tmpfs                    498976       0  498976    0% /dev/shm
+tmpfs                    498976   20300  478676    5% /run
+tmpfs                    498976       0  498976    0% /sys/fs/cgroup
+/dev/sda1               1038336  132472  905864   13% /boot
+tmpfs                     99796       0   99796    0% /run/user/0
+tmpfs                     99796       0   99796    0% /run/user/1000]]></value>
+		</script>
+		<script>
+			<id>-25</id>
+			<value><![CDATA[if [ -f /etc/syslog.conf ];then cat /etc/syslog.conf | sed '/^\s*#/d'|sed '/^\s*$/d';elif [ -f /etc/rsyslog.conf ];then cat /etc/rsyslog.conf | sed '/^\s*#/d'|sed '/^\s*$/d';else cat /etc/syslog-ng/syslog-ng.conf | sed '/^\s*#/d'|sed '/^\s*$/d';fi
+$ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
+$ModLoad imjournal # provides access to the systemd journal
+$WorkDirectory /var/lib/rsyslog
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+$IncludeConfig /etc/rsyslog.d/*.conf
+$OmitLocalLogging on
+$IMJournalStateFile imjournal.state
+*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+authpriv.*                                              /var/log/secure
+mail.*                                                  -/var/log/maillog
+cron.*                                                  /var/log/cron
+*.emerg                                                 :omusrmsg:*
+uucp,news.crit                                          /var/log/spooler
+local7.*                                                /var/log/boot.log]]></value>
+		</script>
+		<script>
+			<id>-26</id>
+			<value><![CDATA[last -100 | grep -v "wtmp"
+test     pts/1        192.168.194.1    Thu Dec 19 12:44   still logged in   
+root     pts/0        192.168.194.1    Thu Dec 19 12:38   still logged in   
+root     pts/0        192.168.194.1    Thu Dec 19 12:35 - 12:35  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:30 - 12:30  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:21 - 12:21  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:17 - 12:17  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:08 - 12:08  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:03 - 12:03  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 12:01 - 12:01  (00:00)    
+test     pts/0        192.168.194.1    Thu Dec 19 11:57 - 11:57  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 09:10 - 09:10  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:54 - 07:54  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:52 - 07:52  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:51 - 07:51  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:49 - 07:49  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:45 - 07:45  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:43 - 07:43  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:40 - 07:40  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:35 - 07:35  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:31 - 07:31  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:29 - 07:30  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:25 - 07:26  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:24 - 07:24  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:23 - 07:23  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:20 - 07:20  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:18 - 07:19  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:14 - 07:14  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:11 - 07:11  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:09 - 07:09  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 07:05 - 07:05  (00:00)    
+root     pts/0        192.168.194.1    Thu Dec 19 07:01 - 09:55  (02:53)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:07 - 06:07  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:06 - 06:06  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:05 - 06:05  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:04 - 06:04  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:01 - 06:01  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:01 - 06:01  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:00 - 06:01  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:00 - 06:00  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 06:00 - 06:00  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:58 - 05:58  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:56 - 05:56  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:53 - 05:53  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:51 - 05:51  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:48 - 05:49  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:41 - 05:41  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:40 - 05:40  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:39 - 05:39  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:28 - 05:28  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:27 - 05:27  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:25 - 05:25  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:24 - 05:24  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 05:22 - 05:22  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:56 - 04:56  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:55 - 04:55  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:38 - 04:38  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:38 - 04:38  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:38 - 04:38  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:37 - 04:37  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:37 - 04:37  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:37 - 04:37  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:36 - 04:36  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:35 - 04:35  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:35 - 04:35  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:34 - 04:34  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:32 - 04:32  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:32 - 04:32  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:31 - 04:31  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:30 - 04:30  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:30 - 04:30  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:29 - 04:29  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:28 - 04:29  (00:01)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:14 - 04:15  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:13 - 04:14  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:12 - 04:13  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:12 - 04:12  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:09 - 04:09  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:09 - 04:09  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:08 - 04:09  (00:01)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:07 - 04:08  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:05 - 04:07  (00:02)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:04 - 04:04  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 04:03 - 04:03  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:26 - 03:26  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:26 - 03:26  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:26 - 03:26  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:26 - 03:26  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:25 - 03:25  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:25 - 03:25  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:24 - 03:25  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:24 - 03:24  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 03:20 - 03:21  (00:01)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:27 - 02:43  (00:15)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:26 - 02:27  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:21 - 02:24  (00:03)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:17 - 02:21  (00:03)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:13 - 02:14  (00:01)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:12 - 02:12  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 02:00 - 02:00  (00:00)    
+test     pts/1        192.168.194.1    Thu Dec 19 01:46 - 01:46  (00:00)    
+]]></value>
+		</script>
+		<script>
+			<id>-27</id>
+			<value><![CDATA[lastb -100
+root     pts/1                         Thu Dec 19 06:06 - 06:06  (00:00)    
+root     pts/1                         Thu Dec 19 06:04 - 06:04  (00:00)    
+root     pts/1                         Tue Dec 17 23:28 - 23:28  (00:00)    
+root     pts/0                         Tue Dec 17 17:36 - 17:36  (00:00)    
+darkless ssh:notty    192.168.194.1    Tue Dec 17 13:51 - 13:51  (00:00)    
+
+btmp begins Tue Dec 17 13:51:35 2019]]></value>
+		</script>
+		<script>
+			<id>-28</id>
+			<value><![CDATA[ls -l /etc/shadow /etc/gshadow /etc/group /etc/passwd|awk '{print $1" "$NF}'
+-rw-r--r--. /etc/group
+----------. /etc/gshadow
+-rw-r--r--. /etc/passwd
+----------. /etc/shadow]]></value>
+		</script>
+		<script>
+			<id>-29</id>
+			<value><![CDATA[uname -p
+x86_64]]></value>
+		</script>
+		<script>
+			<id>-30</id>
+			<value><![CDATA[faillog -a]]></value>
+		</script>
+	</scripts>
+<endTime><![CDATA[2019-12-19 12:44:39
+]]></endTime>
+</result>
